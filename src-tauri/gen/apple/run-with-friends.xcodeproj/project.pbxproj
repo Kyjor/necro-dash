@@ -32,13 +32,13 @@
 		55F3C5838998906CA8BEF0B8 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		64A082BC72205D7AFE24B886 /* main.rs */ = {isa = PBXFileReference; lastKnownFileType = text; path = main.rs; sourceTree = "<group>"; };
 		71EBFE8655B52B230CFBFB99 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
-		731AA93C2F4CDFD200FBA4AE /* run-with-friends_iOS-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "run-with-friends_iOS-Bridging-Header.h"; sourceTree = "<group>"; };
-		7A92931E8B8C6A40855AB9B9 /* Run With Friends.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Run With Friends.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		731AA93C2F4CDFD200FBA4AE /* necro-dash_iOS-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "necro-dash_iOS-Bridging-Header.h"; sourceTree = "<group>"; };
+		7A92931E8B8C6A40855AB9B9 /* Necro Dash.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Necro Dash.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB8FC300930C0BBDD4BE9DDD /* libapp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libapp.a; sourceTree = "<group>"; };
 		B7D4454F691AA34FB04B2C6A /* bindings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bindings.h; sourceTree = "<group>"; };
 		BB11223344556677889900BB /* HealthKitBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitBridge.swift; sourceTree = SOURCE_ROOT; };
 		CC221A14E99790EB6CA82C88 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
-		CE7BCCAE9B6A9A63431CCF5D /* run-with-friends_iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "run-with-friends_iOS.entitlements"; sourceTree = "<group>"; };
+		CE7BCCAE9B6A9A63431CCF5D /* necro-dash_iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "necro-dash_iOS.entitlements"; sourceTree = "<group>"; };
 		D7A7DBA0FE33596A8D01E5CD /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		DBCDB643916B01C7E533DDD3 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		DD11223344556677889900DD /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
@@ -80,7 +80,7 @@
 		09823839C2E100363485B707 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				67D7D1B61DF02C1B4915F0A6 /* run-with-friends */,
+				67D7D1B61DF02C1B4915F0A6 /* necro-dash */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -92,32 +92,32 @@
 				F8716191774CDF27BCDEC903 /* Assets.xcassets */,
 				71EBFE8655B52B230CFBFB99 /* LaunchScreen.storyboard */,
 				C427A9069E16AB5DFB5E2329 /* Externals */,
-				9BB382E6714654AAB86D68F5 /* run-with-friends_iOS */,
+				9BB382E6714654AAB86D68F5 /* necro-dash_iOS */,
 				09823839C2E100363485B707 /* Sources */,
 				047862A8E05552E1B0C58559 /* src */,
 				B3115E78DB315F4237AE5A8C /* Frameworks */,
 				D89C292F3535EC98FFBDBFD7 /* Products */,
-				731AA93C2F4CDFD200FBA4AE /* run-with-friends_iOS-Bridging-Header.h */,
+				731AA93C2F4CDFD200FBA4AE /* necro-dash_iOS-Bridging-Header.h */,
 				BB11223344556677889900BB /* HealthKitBridge.swift */,
 			);
 			sourceTree = "<group>";
 		};
-		67D7D1B61DF02C1B4915F0A6 /* run-with-friends */ = {
+		67D7D1B61DF02C1B4915F0A6 /* necro-dash */ = {
 			isa = PBXGroup;
 			children = (
 				1E2F935EF8ABF913BC11C715 /* main.mm */,
 				BF34421619711078EE53931C /* bindings */,
 			);
-			path = "run-with-friends";
+			path = "necro-dash";
 			sourceTree = "<group>";
 		};
-		9BB382E6714654AAB86D68F5 /* run-with-friends_iOS */ = {
+		9BB382E6714654AAB86D68F5 /* necro-dash_iOS */ = {
 			isa = PBXGroup;
 			children = (
 				15D4A5EB7627946C606CC0BB /* Info.plist */,
-				CE7BCCAE9B6A9A63431CCF5D /* run-with-friends_iOS.entitlements */,
+				CE7BCCAE9B6A9A63431CCF5D /* necro-dash_iOS.entitlements */,
 			);
-			path = "run-with-friends_iOS";
+			path = "necro-dash_iOS";
 			sourceTree = "<group>";
 		};
 		B3115E78DB315F4237AE5A8C /* Frameworks */ = {
@@ -154,7 +154,7 @@
 		D89C292F3535EC98FFBDBFD7 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				7A92931E8B8C6A40855AB9B9 /* Run With Friends.app */,
+				7A92931E8B8C6A40855AB9B9 /* Necro Dash.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -162,9 +162,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		C78E8C83CBD428F23C18BA36 /* run-with-friends_iOS */ = {
+		C78E8C83CBD428F23C18BA36 /* necro-dash_iOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 374C7895BA63C81091EDB592 /* Build configuration list for PBXNativeTarget "run-with-friends_iOS" */;
+			buildConfigurationList = 374C7895BA63C81091EDB592 /* Build configuration list for PBXNativeTarget "necro-dash_iOS" */;
 			buildPhases = (
 				C198D36CB650A215B17FE890 /* Build Rust Code */,
 				473510311370F9501CC5B983 /* Sources */,
@@ -175,11 +175,11 @@
 			);
 			dependencies = (
 			);
-			name = "run-with-friends_iOS";
+			name = "necro-dash_iOS";
 			packageProductDependencies = (
 			);
-			productName = "run-with-friends_iOS";
-			productReference = 7A92931E8B8C6A40855AB9B9 /* Run With Friends.app */;
+			productName = "necro-dash_iOS";
+			productReference = 7A92931E8B8C6A40855AB9B9 /* Necro Dash.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -197,7 +197,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 2274D95A857212BD61D78515 /* Build configuration list for PBXProject "run-with-friends" */;
+			buildConfigurationList = 2274D95A857212BD61D78515 /* Build configuration list for PBXProject "necro-dash" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -210,7 +210,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				C78E8C83CBD428F23C18BA36 /* run-with-friends_iOS */,
+				C78E8C83CBD428F23C18BA36 /* necro-dash_iOS */,
 			);
 		};
 /* End PBXProject section */
@@ -327,7 +327,7 @@
 				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = "run-with-friends_iOS/run-with-friends_iOS.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "necro-dash_iOS/necro-dash_iOS.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = "AKG5NATH99";
 				ENABLE_BITCODE = NO;
@@ -336,7 +336,7 @@
 					"$(inherited)",
 					"\".\"",
 				);
-				INFOPLIST_FILE = "run-with-friends_iOS/Info.plist";
+				INFOPLIST_FILE = "necro-dash_iOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -355,10 +355,10 @@
 					"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",
 					"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.runwithfriends.app;
-				PRODUCT_NAME = "Run With Friends";
+				PRODUCT_BUNDLE_IDENTIFIER = com.necrodash.app;
+				PRODUCT_NAME = "Necro Dash";
 				SDKROOT = iphoneos;
-				SWIFT_OBJC_BRIDGING_HEADER = "run-with-friends_iOS-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "necro-dash_iOS-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = arm64;
@@ -371,7 +371,7 @@
 				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = "run-with-friends_iOS/run-with-friends_iOS.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "necro-dash_iOS/necro-dash_iOS.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = "AKG5NATH99";
 				ENABLE_BITCODE = NO;
@@ -380,7 +380,7 @@
 					"$(inherited)",
 					"\".\"",
 				);
-				INFOPLIST_FILE = "run-with-friends_iOS/Info.plist";
+				INFOPLIST_FILE = "necro-dash_iOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -399,10 +399,10 @@
 					"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",
 					"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.runwithfriends.app;
-				PRODUCT_NAME = "Run With Friends";
+				PRODUCT_BUNDLE_IDENTIFIER = com.necrodash.app;
+				PRODUCT_NAME = "Necro Dash";
 				SDKROOT = iphoneos;
-				SWIFT_OBJC_BRIDGING_HEADER = "run-with-friends_iOS-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "necro-dash_iOS-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -476,7 +476,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2274D95A857212BD61D78515 /* Build configuration list for PBXProject "run-with-friends" */ = {
+		2274D95A857212BD61D78515 /* Build configuration list for PBXProject "necro-dash" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F2394D909E93D9DB4FEF1EF3 /* debug */,
@@ -485,7 +485,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = debug;
 		};
-		374C7895BA63C81091EDB592 /* Build configuration list for PBXNativeTarget "run-with-friends_iOS" */ = {
+		374C7895BA63C81091EDB592 /* Build configuration list for PBXNativeTarget "necro-dash_iOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DF58F95A1D5E26D3B8B68542 /* debug */,

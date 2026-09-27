@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "C78E8C83CBD428F23C18BA36"
-               BuildableName = "Run With Friends.app"
-               BlueprintName = "run-with-friends_iOS"
-               ReferencedContainer = "container:run-with-friends.xcodeproj">
+               BuildableName = "Necro Dash.app"
+               BlueprintName = "necro-dash_iOS"
+               ReferencedContainer = "container:necro-dash.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -31,9 +31,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "C78E8C83CBD428F23C18BA36"
-            BuildableName = "Run With Friends.app"
-            BlueprintName = "run-with-friends_iOS"
-            ReferencedContainer = "container:run-with-friends.xcodeproj">
+            BuildableName = "Necro Dash.app"
+            BlueprintName = "necro-dash_iOS"
+            ReferencedContainer = "container:necro-dash.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <EnvironmentVariables>
@@ -66,9 +66,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "C78E8C83CBD428F23C18BA36"
-            BuildableName = "Run With Friends.app"
-            BlueprintName = "run-with-friends_iOS"
-            ReferencedContainer = "container:run-with-friends.xcodeproj">
+            BuildableName = "Necro Dash.app"
+            BlueprintName = "necro-dash_iOS"
+            ReferencedContainer = "container:necro-dash.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <EnvironmentVariables>
@@ -95,9 +95,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "C78E8C83CBD428F23C18BA36"
-            BuildableName = "Run With Friends.app"
-            BlueprintName = "run-with-friends_iOS"
-            ReferencedContainer = "container:run-with-friends.xcodeproj">
+            BuildableName = "Necro Dash.app"
+            BlueprintName = "necro-dash_iOS"
+            ReferencedContainer = "container:necro-dash.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <EnvironmentVariables>

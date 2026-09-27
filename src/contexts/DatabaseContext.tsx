@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import type Database from '@tauri-apps/plugin-sql';
-import { getDatabase } from '../services/database';
+import Database from '@tauri-apps/plugin-sql';
 
 interface DatabaseContextValue {
   db: Database | null;
@@ -10,6 +9,15 @@ interface DatabaseContextValue {
 
 const DatabaseContext = createContext<DatabaseContextValue>({ db: null, isReady: false, error: null });
 
+let dbPromise: Promise<Database> | null = null;
+
+function getDatabase(): Promise<Database> {
+  if (!dbPromise) {
+    dbPromise = Database.load('sqlite:necro_dash.db');
+  }
+  return dbPromise;
+}
+
 export function DatabaseProvider({ children }: { children: React.ReactNode }) {
   const [db, setDb] = useState<Database | null>(null);
   const [isReady, setIsReady] = useState(false);
@@ -17,8 +25,11 @@ export function DatabaseProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     getDatabase()
-      .then(d => { setDb(d); setIsReady(true); })
-      .catch(e => setError(String(e)));
+      .then((d: Database) => { setDb(d); setIsReady(true); })
+      .catch((e: unknown) => {
+        setError(String(e));
+        setIsReady(true);
+      });
   }, []);
 
   return (

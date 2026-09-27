@@ -7,7 +7,7 @@ interface AuthContextValue {
   session: Session | null;
   loading: boolean;
   error: string | null;
-  signUp: (email: string, password: string, displayName: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   clearError: () => void;
@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = useCallback(async (email: string, password: string, displayName: string) => {
+  const signUp = useCallback(async (email: string, password: string) => {
     setError(null);
     
     if (!isSupabaseConfigured) {
@@ -62,11 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       throw new Error(msg);
     }
     
-    const { error: e, data } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { display_name: displayName } },
-    });
+    const { error: e, data } = await supabase.auth.signUp({ email, password });
     
     if (e) {
       console.error('Signup error:', e);

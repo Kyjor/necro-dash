@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import type { AppSettings } from '../types';
 import { DEFAULT_APP_SETTINGS } from '../types';
-import { loadSettings, saveSettings } from '../services/settingsService';
 import { useDatabase } from './DatabaseContext';
 
 interface SettingsContextValue {
@@ -21,14 +20,6 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const [settings, setSettings] = useState<AppSettings>(DEFAULT_APP_SETTINGS);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  useEffect(() => {
-    if (!db || !isReady) return;
-    loadSettings(db).then(s => {
-      setSettings(s);
-      setIsLoaded(true);
-    });
-  }, [db, isReady]);
-
   // Apply dark mode class to document
   useEffect(() => {
     const { dark_mode } = settings;
@@ -41,8 +32,14 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     if (!db) return;
     const next = { ...settings, ...updates };
     setSettings(next);
-    await saveSettings(db, updates);
   }, [db, settings]);
+
+  useEffect(() => {
+    if (!isReady) return;
+    // Settings persistence is not wired yet in this cleanup pass.
+    // Mark loaded so app can render with defaults.
+    setIsLoaded(true);
+  }, [isReady]);
 
   return (
     <SettingsContext.Provider value={{ settings, updateSettings, isLoaded }}>

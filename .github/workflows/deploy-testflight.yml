@@ -94,7 +94,7 @@ jobs:
         run: |
           BUILD_NUM=${{ github.run_number }}
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_NUM" \
-            src-tauri/gen/apple/runwithfriends_iOS/Info.plist || true
+            src-tauri/gen/apple/necrodash_iOS/Info.plist || true
           echo "BUILD_NUMBER=$BUILD_NUM" >> $GITHUB_ENV
 
       # -----------------------------------------------------------------------
@@ -122,7 +122,7 @@ jobs:
           xcrun altool \
             --upload-app \
             --type ios \
-            --file "src-tauri/gen/apple/build/runwithfriends.ipa" \
+            --file "src-tauri/gen/apple/build/necrodash.ipa" \
             --apiKey ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }} \
             --apiIssuer ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
 

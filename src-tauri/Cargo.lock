@@ -2239,6 +2239,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "necro-dash"
+version = "0.4.2"
+dependencies = [
+ "chrono",
+ "libc",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-notification",
+ "tauri-plugin-sql",
+]
+
+[[package]]
 name = "new_debug_unreachable"
 version = "1.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3245,20 +3259,6 @@ dependencies = [
  "spki",
  "subtle",
  "zeroize",
-]
-
-[[package]]
-name = "run-with-friends"
-version = "0.4.2"
-dependencies = [
- "chrono",
- "libc",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
- "tauri-plugin-notification",
- "tauri-plugin-sql",
 ]
 
 [[package]]

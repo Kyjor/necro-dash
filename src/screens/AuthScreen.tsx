@@ -1,139 +1,103 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Header } from '../components/navigation/Header';
-import { Input } from '../components/ui/Input';
+import { Navigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
+import { Card } from '../components/ui/Card';
+import { Input } from '../components/ui/Input';
+import { Spinner } from '../components/ui/Spinner';
 import { useAuth } from '../contexts/AuthContext';
 
+type AuthMode = 'signin' | 'signup';
+
 export function AuthScreen() {
-  const { signIn, signUp, error, clearError } = useAuth();
-  const navigate = useNavigate();
-  const [mode, setMode] = useState<'signin' | 'signup'>('signin');
+  const { user, loading, error, clearError, signIn, signUp } = useAuth();
+  const [mode, setMode] = useState<AuthMode>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [displayName, setDisplayName] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [success, setSuccess] = useState('');
-  const [passwordMismatch, setPasswordMismatch] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [localMessage, setLocalMessage] = useState<string | null>(null);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <Spinner size="lg" className="text-primary-500" />
+      </div>
+    );
+  }
+
+  if (user) {
+    return <Navigate to="/home" replace />;
+  }
+
+  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setIsSubmitting(true);
+    setLocalMessage(null);
     clearError();
-    setPasswordMismatch(false);
-    
-    if (mode === 'signup' && password !== confirmPassword) {
-      setPasswordMismatch(true);
-      return;
-    }
-    
-    setIsLoading(true);
+
     try {
       if (mode === 'signin') {
-        await signIn(email, password);
-        navigate('/home', { replace: true });
+        await signIn(email.trim(), password);
       } else {
-        await signUp(email, password, displayName);
-        setSuccess('Check your email to confirm your account!');
+        await signUp(email.trim(), password);
+        setLocalMessage('Account created. If email confirmation is enabled, check your inbox.');
       }
-    } catch (err) {
-      console.error('Auth error:', err);
+    } catch {
+      // Auth context already sets user-facing error.
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   }
 
   return (
-    <div className="flex flex-col flex-1 overflow-y-auto pb-24">
-      <Header title={mode === 'signin' ? 'Sign In' : 'Sign Up'} showBack />
-      
-      <div className="flex flex-col items-center justify-center px-6 pt-8 flex-1">
-        <div className="text-5xl mb-4">🏃</div>
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-        {mode === 'signin' ? 'Welcome back' : 'Join Run With Friends'}
-      </h1>
-      <p className="text-gray-500 dark:text-gray-400 mb-8 text-sm">
-        {mode === 'signin' ? 'Sign in to sync your runs across devices' : 'Create an account for cloud sync & social features'}
-      </p>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
+      <Card className="w-full max-w-md">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">Necro Dash</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-5">
+          {mode === 'signin' ? 'Sign in to view your analytics dashboard.' : 'Create an account to continue.'}
+        </p>
 
-      {success ? (
-        <div className="w-full max-w-sm bg-green-50 dark:bg-green-900/20 rounded-2xl p-4 text-green-700 dark:text-green-400 text-sm text-center mb-4">
-          {success}
-        </div>
-      ) : (
-        <form onSubmit={handleSubmit} className="w-full max-w-sm flex flex-col gap-4">
-          {mode === 'signup' && (
-            <Input
-              label="Display Name"
-              type="text"
-              placeholder="Your name"
-              value={displayName}
-              onChange={e => setDisplayName(e.target.value)}
-              required
-            />
-          )}
+        <form onSubmit={onSubmit} className="space-y-3">
           <Input
             label="Email"
             type="email"
-            placeholder="you@example.com"
             value={email}
             onChange={e => setEmail(e.target.value)}
             required
+            autoComplete="email"
           />
+
           <Input
             label="Password"
             type="password"
-            placeholder="••••••••"
             value={password}
-            onChange={e => {
-              setPassword(e.target.value);
-              setPasswordMismatch(false);
-            }}
+            onChange={e => setPassword(e.target.value)}
             required
-            minLength={6}
+            autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
           />
-          {mode === 'signup' && (
-            <Input
-              label="Confirm Password"
-              type="password"
-              placeholder="••••••••"
-              value={confirmPassword}
-              onChange={e => {
-                setConfirmPassword(e.target.value);
-                setPasswordMismatch(false);
-              }}
-              required
-              minLength={6}
-            />
-          )}
 
-          {passwordMismatch && (
-            <p className="text-sm text-red-500 text-center">Passwords do not match</p>
-          )}
-          {error && (
-            <p className="text-sm text-red-500 text-center">{error}</p>
-          )}
+          {error ? <p className="text-sm text-red-500">{error}</p> : null}
+          {localMessage ? <p className="text-sm text-emerald-600">{localMessage}</p> : null}
 
-          <Button type="submit" size="lg" isLoading={isLoading} className="w-full mt-2">
+          <Button type="submit" className="w-full" isLoading={isSubmitting}>
             {mode === 'signin' ? 'Sign In' : 'Create Account'}
           </Button>
         </form>
-      )}
 
-      <button
-        className="mt-6 text-sm text-primary-600 dark:text-primary-400"
-        onClick={() => {
-          setMode(m => m === 'signin' ? 'signup' : 'signin');
-          clearError();
-          setSuccess('');
-          setPasswordMismatch(false);
-          setConfirmPassword('');
-        }}
-      >
-        {mode === 'signin' ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
-      </button>
-      </div>
+        <div className="mt-4 text-sm text-gray-600 dark:text-gray-300">
+          {mode === 'signin' ? "Don't have an account?" : 'Already have an account?'}{' '}
+          <button
+            type="button"
+            className="text-primary-600 dark:text-primary-400 font-medium"
+            onClick={() => {
+              clearError();
+              setLocalMessage(null);
+              setMode(mode === 'signin' ? 'signup' : 'signin');
+            }}
+          >
+            {mode === 'signin' ? 'Create one' : 'Sign in'}
+          </button>
+        </div>
+      </Card>
     </div>
   );
 }
-

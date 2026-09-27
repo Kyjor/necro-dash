@@ -1,10 +1,11 @@
+import type { ReactNode } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 interface Tab {
   path: string;
   label: string;
-  icon: React.ReactNode;
-  activeIcon: React.ReactNode;
+  icon: ReactNode;
+  activeIcon: ReactNode;
 }
 
 const HomeIcon = ({ filled }: { filled: boolean }) => (
@@ -13,19 +14,6 @@ const HomeIcon = ({ filled }: { filled: boolean }) => (
   </svg>
 );
 
-const CalIcon = ({ filled }: { filled: boolean }) => (
-  <svg viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth={1.8} className="w-6 h-6">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
-  </svg>
-);
-
-const LogIcon = () => (
-  <div className="w-12 h-12 bg-primary-600 rounded-2xl flex items-center justify-center shadow-lg">
-    <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={2} className="w-6 h-6">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-    </svg>
-  </div>
-);
 
 const StatsIcon = ({ filled }: { filled: boolean }) => (
   <svg viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth={1.8} className="w-6 h-6">
@@ -33,18 +21,30 @@ const StatsIcon = ({ filled }: { filled: boolean }) => (
   </svg>
 );
 
-const PersonIcon = ({ filled }: { filled: boolean }) => (
+const QueryIcon = ({ filled }: { filled: boolean }) => (
   <svg viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth={1.8} className="w-6 h-6">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 9h6M9 15h6M4.5 6.75h15A1.5 1.5 0 0121 8.25v7.5A1.5 1.5 0 0119.5 17.25h-15A1.5 1.5 0 013 15.75v-7.5a1.5 1.5 0 011.5-1.5z" />
+  </svg>
+);
+
+const RunsIcon = ({ filled }: { filled: boolean }) => (
+  <svg viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth={1.8} className="w-6 h-6">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm0 5.25h.007v.008H3.75V12zm0 5.25h.007v.008H3.75v-.008z" />
+  </svg>
+);
+
+const BalanceIcon = ({ filled }: { filled: boolean }) => (
+  <svg viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth={1.8} className="w-6 h-6">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0012 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52l2.62 10.726c.122.499-.106 1.028-.589 1.202a5.988 5.988 0 01-2.031.352 5.988 5.988 0 01-2.031-.352c-.483-.174-.711-.703-.59-1.202L18.75 4.971zm-16.5.52c.99-.203 1.99-.377 3-.52m0 0l2.62 10.726c.122.499-.106 1.028-.589 1.202a5.989 5.989 0 01-2.031.352 5.989 5.989 0 01-2.031-.352c-.483-.174-.711-.703-.59-1.202L5.25 4.971z" />
   </svg>
 );
 
 const TABS: Tab[] = [
   { path: '/home', label: 'Home', icon: <HomeIcon filled={false} />, activeIcon: <HomeIcon filled={true} /> },
-  { path: '/calendar', label: 'Calendar', icon: <CalIcon filled={false} />, activeIcon: <CalIcon filled={true} /> },
-  { path: '/log', label: 'Log', icon: <LogIcon />, activeIcon: <LogIcon /> },
   { path: '/stats', label: 'Stats', icon: <StatsIcon filled={false} />, activeIcon: <StatsIcon filled={true} /> },
-  { path: '/profile', label: 'Profile', icon: <PersonIcon filled={false} />, activeIcon: <PersonIcon filled={true} /> },
+  { path: '/runs', label: 'Runs', icon: <RunsIcon filled={false} />, activeIcon: <RunsIcon filled={true} /> },
+  { path: '/balance', label: 'Balance', icon: <BalanceIcon filled={false} />, activeIcon: <BalanceIcon filled={true} /> },
+  { path: '/query-builder', label: 'Query', icon: <QueryIcon filled={false} />, activeIcon: <QueryIcon filled={true} /> },
 ];
 
 export function TabBar() {
@@ -55,20 +55,7 @@ export function TabBar() {
     <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-t border-gray-200 dark:border-gray-700 pb-safe-bottom">
       <div className="flex items-end justify-around px-2 pt-2 pb-1">
         {TABS.map(tab => {
-          const isLog = tab.path === '/log';
           const isActive = location.pathname.startsWith(tab.path);
-
-          if (isLog) {
-            return (
-              <button
-                key={tab.path}
-                onClick={() => navigate(tab.path)}
-                className="flex flex-col items-center gap-0.5 px-4 -mt-4"
-              >
-                {tab.icon}
-              </button>
-            );
-          }
 
           return (
             <button

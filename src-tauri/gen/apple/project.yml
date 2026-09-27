@@ -1,6 +1,6 @@
-name: run-with-friends
+name: necro-dash
 options:
-  bundleIdPrefix: com.runwithfriends.app
+  bundleIdPrefix: com.necrodash.app
   deploymentTarget:
     iOS: 13.0
 fileGroups: [../../src]
@@ -10,8 +10,8 @@ configs:
 settingGroups:
   app:
     base:
-      PRODUCT_NAME: Run With Friends
-      PRODUCT_BUNDLE_IDENTIFIER: com.runwithfriends.app
+      PRODUCT_NAME: Necro Dash
+      PRODUCT_BUNDLE_IDENTIFIER: com.necrodash.app
       DEVELOPMENT_TEAM: AKG5NATH99
 targetTemplates:
   app:
@@ -25,20 +25,20 @@ targetTemplates:
     settings:
       groups: [app]
 targets:
-  run-with-friends_iOS:
+  necro-dash_iOS:
     type: application
     platform: iOS
     sources:
       - path: Sources
       - path: Assets.xcassets
       - path: Externals
-      - path: run-with-friends_iOS
+      - path: necro-dash_iOS
       - path: assets
         buildPhase: resources
         type: folder
       - path: LaunchScreen.storyboard
     info:
-      path: run-with-friends_iOS/Info.plist
+      path: necro-dash_iOS/Info.plist
       properties:
         LSRequiresIPhoneOS: true
         UILaunchStoryboardName: LaunchScreen
@@ -55,7 +55,7 @@ targets:
         CFBundleShortVersionString: 0.1.0
         CFBundleVersion: 0.1.0
     entitlements:
-      path: run-with-friends_iOS/run-with-friends_iOS.entitlements
+      path: necro-dash_iOS/necro-dash_iOS.entitlements
     scheme:
       environmentVariables:
         RUST_BACKTRACE: full

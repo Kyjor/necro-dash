@@ -1,13 +1,13 @@
 # Uncomment the next line to define a global platform for your project
 
-target 'run-with-friends_iOS' do
+target 'necro-dash_iOS' do
 platform :ios, '13.0'
-  # Pods for run-with-friends_iOS
+  # Pods for necro-dash_iOS
 end
 
-target 'run-with-friends_macOS' do
+target 'necro-dash_macOS' do
 platform :osx, '11.0'
-  # Pods for run-with-friends_macOS
+  # Pods for necro-dash_macOS
 end
 
 # Delete the deployment target for iOS and macOS, causing it to be inherited from the Podfile

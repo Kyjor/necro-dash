@@ -1,12 +1,12 @@
 [package]
-name = "run-with-friends"
+name = "necro-dash"
 version = "0.4.2"
-description = "Run With Friends - Training Plan & Run Tracker"
+description = "Necro Dash - Training Plan & Run Tracker"
 authors = ["you"]
 edition = "2021"
 
 [lib]
-name = "run_with_friends_lib"
+name = "necro_dash_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

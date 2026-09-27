@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    run_with_friends_lib::run()
+    necro_dash_lib::run()
 }
