@@ -67,7 +67,6 @@ export async function fetchRunFilterOptions(): Promise<RunFilterOptions> {
   const { data, error } = await supabase
     .from('Runs')
     .select('character_key,game_version')
-    .not('run_uuid', 'is', null)
     .order('created_at', { ascending: false })
     .limit(1000);
   if (error) throw error;
