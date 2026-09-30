@@ -3,5 +3,3 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <HealthKit/HealthKit.h>
-#import <CoreLocation/CoreLocation.h>
