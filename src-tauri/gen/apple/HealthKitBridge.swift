@@ -227,6 +227,38 @@ public func fetchHealthKitWorkouts(
     }
 }
 
+// HealthKit delivers these queries on concurrent queues. A class lets each
+// callback write its fields without mutating a captured local var.
+private final class DetailsBox: @unchecked Sendable {
+    private let lock = NSLock()
+    private var storage = WorkoutDetailsJSON()
+
+    var value: WorkoutDetailsJSON {
+        lock.lock()
+        defer { lock.unlock() }
+        return storage
+    }
+
+    func set<T>(_ keyPath: WritableKeyPath<WorkoutDetailsJSON, T>, _ newValue: T) {
+        lock.lock()
+        storage[keyPath: keyPath] = newValue
+        lock.unlock()
+    }
+
+    func merge(_ partial: WorkoutDetailsJSON) {
+        lock.lock()
+        storage.hr_zone_1_seconds = partial.hr_zone_1_seconds
+        storage.hr_zone_2_seconds = partial.hr_zone_2_seconds
+        storage.hr_zone_3_seconds = partial.hr_zone_3_seconds
+        storage.hr_zone_4_seconds = partial.hr_zone_4_seconds
+        storage.hr_zone_5_seconds = partial.hr_zone_5_seconds
+        storage.min_heart_rate = partial.min_heart_rate
+        storage.average_heart_rate = partial.average_heart_rate
+        storage.max_heart_rate = partial.max_heart_rate
+        lock.unlock()
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Fetch full details for a single workout (called at import time)
 // ---------------------------------------------------------------------------
@@ -245,34 +277,38 @@ public func fetchWorkoutDetails(
     guard let workout = fetchWorkoutById(workoutId) else { return -2 }
 
     let semaphore = DispatchSemaphore(value: 0)
-    var details = WorkoutDetailsJSON()
+    // Reference type so the HealthKit callbacks can fill one result without
+    // mutating a captured var (Swift treats those callbacks as concurrent).
+    let details = DetailsBox()
     let group = DispatchGroup()
 
     // ── Heart Rate (full samples for zones + min) ─────────────────────────
     group.enter()
     fetchHRSamples(workout: workout) { samples in
         if !samples.isEmpty {
+            var hr = WorkoutDetailsJSON()
             let values = samples.map { $0.quantity.doubleValue(for: HKUnit(from: "count/min")) }
-            details.min_heart_rate = values.min()
+            hr.min_heart_rate = values.min()
             // Compute average / max HR from samples
             let avg = values.reduce(0, +) / Double(values.count)
-            details.average_heart_rate = avg
-            details.max_heart_rate = values.max()
+            hr.average_heart_rate = avg
+            hr.max_heart_rate = values.max()
             let effectiveMax = maxHR > 0 ? maxHR : (values.max() ?? 190)
-            details.hr_zone_1_seconds = 0; details.hr_zone_2_seconds = 0
-            details.hr_zone_3_seconds = 0; details.hr_zone_4_seconds = 0
-            details.hr_zone_5_seconds = 0
+            hr.hr_zone_1_seconds = 0; hr.hr_zone_2_seconds = 0
+            hr.hr_zone_3_seconds = 0; hr.hr_zone_4_seconds = 0
+            hr.hr_zone_5_seconds = 0
             // Approximate time per sample = total_duration / sample_count
             let secondsPerSample = workout.duration / Double(samples.count)
             for sample in samples {
                 let bpm = sample.quantity.doubleValue(for: HKUnit(from: "count/min"))
                 let pct = bpm / effectiveMax
-                if      pct < 0.60 { details.hr_zone_1_seconds! += secondsPerSample }
-                else if pct < 0.70 { details.hr_zone_2_seconds! += secondsPerSample }
-                else if pct < 0.80 { details.hr_zone_3_seconds! += secondsPerSample }
-                else if pct < 0.90 { details.hr_zone_4_seconds! += secondsPerSample }
-                else               { details.hr_zone_5_seconds! += secondsPerSample }
+                if      pct < 0.60 { hr.hr_zone_1_seconds! += secondsPerSample }
+                else if pct < 0.70 { hr.hr_zone_2_seconds! += secondsPerSample }
+                else if pct < 0.80 { hr.hr_zone_3_seconds! += secondsPerSample }
+                else if pct < 0.90 { hr.hr_zone_4_seconds! += secondsPerSample }
+                else               { hr.hr_zone_5_seconds! += secondsPerSample }
             }
+            details.merge(hr)
         }
         group.leave()
     }
@@ -281,7 +317,7 @@ public func fetchWorkoutDetails(
     group.enter()
     fetchStatistic(workout: workout, type: .stepCount, options: .cumulativeSum) { stats in
         if let total = stats?.sumQuantity()?.doubleValue(for: .count()) {
-            details.average_cadence = total / (workout.duration / 60.0)
+            details.set(\.average_cadence, total / (workout.duration / 60.0))
         }
         group.leave()
     }
@@ -290,7 +326,7 @@ public func fetchWorkoutDetails(
     if #available(iOS 16.0, *) {
         group.enter()
         fetchStatistic(workout: workout, type: .runningStrideLength, options: .discreteAverage) { stats in
-            details.average_stride_length_meters = stats?.averageQuantity()?.doubleValue(for: .meter())
+            details.set(\.average_stride_length_meters, stats?.averageQuantity()?.doubleValue(for: .meter()))
             group.leave()
         }
 
@@ -298,7 +334,7 @@ public func fetchWorkoutDetails(
         fetchStatistic(workout: workout, type: .runningGroundContactTime, options: .discreteAverage) { stats in
             // HealthKit stores GCT in seconds; convert to ms
             if let secs = stats?.averageQuantity()?.doubleValue(for: .second()) {
-                details.average_ground_contact_time_ms = secs * 1000
+                details.set(\.average_ground_contact_time_ms, secs * 1000)
             }
             group.leave()
         }
@@ -307,15 +343,15 @@ public func fetchWorkoutDetails(
         fetchStatistic(workout: workout, type: .runningVerticalOscillation, options: .discreteAverage) { stats in
             // HealthKit stores in metres; convert to cm
             if let metres = stats?.averageQuantity()?.doubleValue(for: .meter()) {
-                details.average_vertical_oscillation_cm = metres * 100
+                details.set(\.average_vertical_oscillation_cm, metres * 100)
             }
             group.leave()
         }
 
         group.enter()
         fetchStatistic(workout: workout, type: .runningPower, options: [.discreteAverage, .discreteMax]) { stats in
-            details.average_power_watts = stats?.averageQuantity()?.doubleValue(for: HKUnit.watt())
-            details.max_power_watts = stats?.maximumQuantity()?.doubleValue(for: HKUnit.watt())
+            details.set(\.average_power_watts, stats?.averageQuantity()?.doubleValue(for: HKUnit.watt()))
+            details.set(\.max_power_watts, stats?.maximumQuantity()?.doubleValue(for: HKUnit.watt()))
             group.leave()
         }
     }
@@ -323,19 +359,19 @@ public func fetchWorkoutDetails(
     // ── VO2 max (latest sample) ──────────────────────────────────────────
     group.enter()
     fetchLatestVO2Max { v in
-        details.vo2_max = v
+        details.set(\.vo2_max, v)
         group.leave()
     }
 
     // ── GPS Route ────────────────────────────────────────────────────────
     group.enter()
     fetchRoute(workout: workout) { points, gain, loss in
-        details.elevation_gain_meters = gain
-        details.elevation_loss_meters = loss
+        details.set(\.elevation_gain_meters, gain)
+        details.set(\.elevation_loss_meters, loss)
         if let pts = points, !pts.isEmpty {
             if let json = try? JSONEncoder().encode(pts),
                let str = String(data: json, encoding: .utf8) {
-                details.route_points = str
+                details.set(\.route_points, str)
             }
         }
         group.leave()
@@ -345,7 +381,7 @@ public func fetchWorkoutDetails(
     semaphore.wait()
 
     do {
-        let json = try JSONEncoder().encode(details)
+        let json = try JSONEncoder().encode(details.value)
         let str = String(data: json, encoding: .utf8)!
         resultPtr?.pointee = strdup(str)
         resultLen?.pointee = str.utf8.count
