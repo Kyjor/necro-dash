@@ -17,13 +17,15 @@
 	<key>CFBundleShortVersionString</key>
 	<string>0.4.2</string>
 	<key>CFBundleVersion</key>
-	<string>0.4.2</string>
+	<string>1</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSHealthShareUsageDescription</key>
-	<string>Run 4 Fun reads your workouts to import runs and health metrics.</string>
+	<string>Necro Dash reads your workouts to import runs and health metrics.</string>
 	<key>NSHealthUpdateUsageDescription</key>
-	<string>Run 4 Fun can write runs back to Apple Health.</string>
+	<string>Necro Dash can write runs back to Apple Health.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>We use your location to reliably track runs even when the app is not in the foreground.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

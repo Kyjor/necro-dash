@@ -52,8 +52,9 @@ targets:
           - UIInterfaceOrientationPortraitUpsideDown
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
-        CFBundleShortVersionString: 0.1.0
-        CFBundleVersion: 0.1.0
+        CFBundleShortVersionString: 0.4.2
+        CFBundleVersion: 1
+        ITSAppUsesNonExemptEncryption: false
     entitlements:
       path: necro-dash_iOS/necro-dash_iOS.entitlements
     scheme:

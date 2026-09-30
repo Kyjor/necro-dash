@@ -94,7 +94,7 @@ jobs:
         run: |
           BUILD_NUM=${{ github.run_number }}
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_NUM" \
-            src-tauri/gen/apple/necrodash_iOS/Info.plist || true
+            src-tauri/gen/apple/necro-dash_iOS/Info.plist
           echo "BUILD_NUMBER=$BUILD_NUM" >> $GITHUB_ENV
 
       # -----------------------------------------------------------------------
@@ -119,10 +119,17 @@ jobs:
 
       - name: Upload to TestFlight
         run: |
+          IPA="$(find src-tauri/gen/apple/build -name '*.ipa' -print -quit)"
+          if [ -z "$IPA" ]; then
+            echo "No .ipa found under src-tauri/gen/apple/build"
+            find src-tauri/gen/apple/build -type f | head -50
+            exit 1
+          fi
+          echo "Uploading $IPA"
           xcrun altool \
             --upload-app \
             --type ios \
-            --file "src-tauri/gen/apple/build/necrodash.ipa" \
+            --file "$IPA" \
             --apiKey ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }} \
             --apiIssuer ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
 
