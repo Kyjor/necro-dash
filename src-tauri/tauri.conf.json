@@ -35,7 +35,8 @@
       "icons/icon.ico"
     ],
     "iOS": {
-      "developmentTeam": "AKG5NATH99"
+      "developmentTeam": "AKG5NATH99",
+      "minimumSystemVersion": "16.0"
     }
   }
 }
