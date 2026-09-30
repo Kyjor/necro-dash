@@ -82,8 +82,25 @@ jobs:
           plist_file="$(mktemp).plist"
           security cms -D -i "$tmp" > "$plist_file"
           uuid="$(plutil -extract UUID raw "$plist_file")"
+          name="$(plutil -extract Name raw "$plist_file")"
           cp "$tmp" "$HOME/Library/MobileDevice/Provisioning Profiles/${uuid}.mobileprovision"
-          echo "Installed profile UUID=$uuid"
+          echo "Installed profile name=$name UUID=$uuid"
+          python3 - "$name" <<'PY'
+          import pathlib, sys
+          name = sys.argv[1]
+          path = pathlib.Path("src-tauri/gen/apple/necro-dash.xcodeproj/project.pbxproj")
+          text = path.read_text()
+          old = 'CODE_SIGN_IDENTITY = "iPhone Developer";'
+          new = (
+              "CODE_SIGN_STYLE = Manual;\n"
+              "\t\t\t\tCODE_SIGN_IDENTITY = \"Apple Distribution\";\n"
+              f"\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = \"{name}\";"
+          )
+          if old not in text:
+              sys.exit("expected iPhone Developer identity in the Xcode project")
+          path.write_text(text.replace(old, new))
+          print("Set manual signing to", name)
+          PY
           rm -f "$tmp" "$plist_file"
 
       # -----------------------------------------------------------------------
@@ -115,7 +132,6 @@ jobs:
           APPLE_DEVELOPMENT_TEAM: ${{ secrets.APPLE_DEVELOPMENT_TEAM }}
           IOS_CERTIFICATE: ${{ secrets.APPLE_DISTRIBUTION_CERT_P12 }}
           IOS_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_DISTRIBUTION_CERT_PASSWORD }}
-          IOS_MOBILE_PROVISION: ${{ secrets.PROVISIONING_PROFILE_BASE64 }}
 
       # -----------------------------------------------------------------------
       # 9. Upload to TestFlight via App Store Connect API
