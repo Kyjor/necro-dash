@@ -83,18 +83,8 @@ jobs:
           security cms -D -i "$tmp" > "$plist_file"
           uuid="$(plutil -extract UUID raw "$plist_file")"
           cp "$tmp" "$HOME/Library/MobileDevice/Provisioning Profiles/${uuid}.mobileprovision"
-          echo "PROFILE_UUID=${uuid}" >> "$GITHUB_ENV"
           echo "Installed profile UUID=$uuid"
           rm -f "$tmp" "$plist_file"
-
-      - name: Place App Store Connect API key
-        env:
-          APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
-        run: |
-          mkdir -p ~/.appstoreconnect/private_keys
-          KEY_PATH="$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}.p8"
-          printf '%s' "$APP_STORE_CONNECT_API_KEY_CONTENT" > "$KEY_PATH"
-          echo "APPLE_API_KEY_PATH=$KEY_PATH" >> "$GITHUB_ENV"
 
       # -----------------------------------------------------------------------
       # 6. Write environment variables for the build
@@ -119,65 +109,25 @@ jobs:
       # -----------------------------------------------------------------------
       # 8. Build the Tauri iOS app
       # -----------------------------------------------------------------------
-      - name: Archive Tauri iOS
-        run: npx tauri ios build --export-method app-store-connect --archive-only
+      - name: Build Tauri iOS (release)
+        run: npx tauri ios build --export-method app-store-connect
         env:
           APPLE_DEVELOPMENT_TEAM: ${{ secrets.APPLE_DEVELOPMENT_TEAM }}
-          APPLE_API_ISSUER: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
-          APPLE_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-          APPLE_API_KEY_PATH: ${{ env.APPLE_API_KEY_PATH }}
-
-      - name: Export App Store IPA
-        env:
-          APPLE_DEVELOPMENT_TEAM: ${{ secrets.APPLE_DEVELOPMENT_TEAM }}
-        run: |
-          set -euo pipefail
-          APPLE="src-tauri/gen/apple"
-          ARCHIVE="$(find "$APPLE/build" -name '*.xcarchive' -print -quit)"
-          if [ -z "$ARCHIVE" ] || [ ! -d "$ARCHIVE" ]; then
-            echo "No xcarchive found"
-            find "$APPLE" -name '*.xcarchive' -o -type d -name build | head -40
-            exit 1
-          fi
-
-          DIST_ID="$(security find-identity -v -p codesigning | awk -F'"' '/Apple Distribution/{print $2; exit}')"
-          if [ -z "$DIST_ID" ]; then
-            echo "No Apple Distribution identity in keychain"
-            security find-identity -v -p codesigning
-            exit 1
-          fi
-          echo "Using identity: $DIST_ID"
-          echo "Archive: $ARCHIVE"
-
-          EXPORT_OPTS="$(mktemp).plist"
-          OUT_DIR="$APPLE/build/export"
-          mkdir -p "$OUT_DIR"
-          export DIST_ID
-          python3 - "$EXPORT_OPTS" <<'PY'
-          import plistlib, os, sys
-          path = sys.argv[1]
-          data = {
-            "method": "app-store-connect",
-            "signingStyle": "manual",
-            "teamID": os.environ["APPLE_DEVELOPMENT_TEAM"],
-            "signingCertificate": os.environ["DIST_ID"],
-            "provisioningProfiles": {
-              "com.necrodash.app": os.environ["PROFILE_UUID"],
-            },
-          }
-          with open(path, "wb") as f:
-            plistlib.dump(data, f)
-          print("Wrote export options")
-          PY
-
-          xcodebuild -exportArchive \
-            -archivePath "$ARCHIVE" \
-            -exportPath "$OUT_DIR" \
-            -exportOptionsPlist "$EXPORT_OPTS"
+          IOS_CERTIFICATE: ${{ secrets.APPLE_DISTRIBUTION_CERT_P12 }}
+          IOS_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_DISTRIBUTION_CERT_PASSWORD }}
+          IOS_MOBILE_PROVISION: ${{ secrets.PROVISIONING_PROFILE_BASE64 }}
 
       # -----------------------------------------------------------------------
       # 9. Upload to TestFlight via App Store Connect API
       # -----------------------------------------------------------------------
+      - name: Place App Store Connect API key
+        env:
+          APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
+        run: |
+          mkdir -p ~/.appstoreconnect/private_keys
+          printf '%s' "$APP_STORE_CONNECT_API_KEY_CONTENT" \
+            > ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}.p8
+
       - name: Upload to TestFlight
         run: |
           IPA="$(find src-tauri/gen/apple/build -name '*.ipa' -print -quit)"
