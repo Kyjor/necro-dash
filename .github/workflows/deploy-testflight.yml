@@ -114,27 +114,28 @@ jobs:
           EOF
 
       # -----------------------------------------------------------------------
-      # 7. Auto-increment build number (CFBundleVersion = GitHub run number)
-      # -----------------------------------------------------------------------
-      - name: Set build number
-        run: |
-          BUILD_NUM=${{ github.run_number }}
-          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_NUM" \
-            src-tauri/gen/apple/necro-dash_iOS/Info.plist
-          echo "BUILD_NUMBER=$BUILD_NUM" >> $GITHUB_ENV
-
-      # -----------------------------------------------------------------------
-      # 8. Build the Tauri iOS app
+      # 7. Build the Tauri iOS app
+      #
+      # Tauri uses the app version (currently 0.4.2) as CFBundleVersion unless
+      # bundle.iOS.bundleVersion is set. App Store Connect rejects a repeat of
+      # that value. Pass the GitHub run number as the bundle version. Editing
+      # Info.plist before this command does not stick: the build rewrites it.
+      # Do not use --build-number; that appends a fourth component (0.4.2.N),
+      # which App Store Connect also rejects.
       # -----------------------------------------------------------------------
       - name: Build Tauri iOS (release)
-        run: npx tauri ios build --export-method app-store-connect
+        run: |
+          echo "BUILD_NUMBER=${{ github.run_number }}" >> "$GITHUB_ENV"
+          npx tauri ios build \
+            --export-method app-store-connect \
+            --config "{\"bundle\":{\"iOS\":{\"bundleVersion\":\"${{ github.run_number }}\"}}}"
         env:
           APPLE_DEVELOPMENT_TEAM: ${{ secrets.APPLE_DEVELOPMENT_TEAM }}
           IOS_CERTIFICATE: ${{ secrets.APPLE_DISTRIBUTION_CERT_P12 }}
           IOS_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_DISTRIBUTION_CERT_PASSWORD }}
 
       # -----------------------------------------------------------------------
-      # 9. Upload to TestFlight via App Store Connect API
+      # 8. Upload to TestFlight via App Store Connect API
       # -----------------------------------------------------------------------
       - name: Place App Store Connect API key
         env:
@@ -153,6 +154,12 @@ jobs:
             exit 1
           fi
           echo "Uploading $IPA"
+          tmp="$(mktemp -d)"
+          unzip -q "$IPA" -d "$tmp"
+          plist="$(find "$tmp/Payload" -name Info.plist -print -quit)"
+          echo "CFBundleShortVersionString=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$plist")"
+          echo "CFBundleVersion=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$plist")"
+          rm -rf "$tmp"
           xcrun altool \
             --upload-app \
             --type ios \
@@ -161,7 +168,7 @@ jobs:
             --apiIssuer ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
 
       # -----------------------------------------------------------------------
-      # 10. Notify on success/failure
+      # 9. Notify on success/failure
       # -----------------------------------------------------------------------
       - name: Notify success
         if: success()
