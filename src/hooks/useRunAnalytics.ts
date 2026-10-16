@@ -10,6 +10,8 @@ import {
   fetchRunFilterOptions,
   fetchRunList,
   fetchTreasureStats,
+  fetchUserProfile,
+  fetchUserRunSummaries,
 } from '../services/runAnalyticsService';
 import type { DateRangeFilterValue, RunFilters } from '../types/analytics';
 
@@ -21,9 +23,44 @@ function rangeKey(range: DateRangeFilterValue) {
 
 export function useRunList(filters: RunFilters, page: number) {
   return useQuery({
-    queryKey: ['run-analytics', 'list', ...rangeKey(filters.range), filters.outcome ?? '', filters.character ?? '', filters.version ?? '', page],
+    queryKey: [
+      'run-analytics',
+      'list',
+      ...rangeKey(filters.range),
+      filters.outcome ?? '',
+      filters.character ?? '',
+      filters.version ?? '',
+      filters.userId ?? '',
+      page,
+    ],
     queryFn: () => fetchRunList(filters, page),
     placeholderData: keepPreviousData,
+    staleTime: STALE_MS,
+  });
+}
+
+export function useUserRunSummaries(filters: Omit<RunFilters, 'userId'>, enabled = true) {
+  return useQuery({
+    queryKey: [
+      'run-analytics',
+      'user-summaries',
+      ...rangeKey(filters.range),
+      filters.outcome ?? '',
+      filters.character ?? '',
+      filters.version ?? '',
+    ],
+    queryFn: () => fetchUserRunSummaries(filters),
+    placeholderData: keepPreviousData,
+    enabled,
+    staleTime: STALE_MS,
+  });
+}
+
+export function useUserProfile(userId: string | undefined) {
+  return useQuery({
+    queryKey: ['run-analytics', 'user-profile', userId ?? ''],
+    queryFn: () => fetchUserProfile(userId as string),
+    enabled: !!userId,
     staleTime: STALE_MS,
   });
 }

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { StatsTable } from '../components/charts/StatsTable';
 import { OutcomeBadge } from '../components/runs/OutcomeBadge';
@@ -7,10 +8,13 @@ import { RunTimeline } from '../components/runs/RunTimeline';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { EmptyState } from '../components/ui/EmptyState';
+import { SegmentedControl } from '../components/ui/SegmentedControl';
 import { Spinner } from '../components/ui/Spinner';
 import { useRunDetail } from '../hooks/useRunAnalytics';
 import type { RunDetail, RunItemStats } from '../types/analytics';
-import { formatDuration, prettyKey } from '../utils/runFormat';
+import { formatDuration, prettyKey, shortUserId } from '../utils/runFormat';
+
+type DetailTab = 'path' | 'combat' | 'loadout';
 
 function Field({ label, value }: { label: string; value: string | number | null | undefined }) {
   return (
@@ -71,7 +75,7 @@ function UsageCard({ stats }: { stats: RunItemStats }) {
 
   return (
     <Card className="space-y-4">
-      <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">Usage</h2>
+      <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">Item & Piece Usage</h2>
       {totals.length > 0 ? (
         <div className="grid grid-cols-3 gap-3">
           {totals.map(([key, value]) => (
@@ -99,8 +103,8 @@ function UsageCard({ stats }: { stats: RunItemStats }) {
             { key: 'key', label: 'Potion', render: p => prettyKey(p.key) },
             { key: 'gained', label: 'Gained' },
             { key: 'used', label: 'Used' },
-            { key: 'sold', label: 'Sold' },
-            { key: 'discarded', label: 'Discarded' },
+            { key: 'sold', label: 'Sold', secondary: true },
+            { key: 'discarded', label: 'Discarded', secondary: true },
           ]}
         />
       ) : null}
@@ -124,12 +128,30 @@ export function RunDetailScreen() {
   const { uuid } = useParams<{ uuid: string }>();
   const navigate = useNavigate();
   const { data: run, isLoading, error } = useRunDetail(uuid);
+  const [tab, setTab] = useState<DetailTab>('path');
+
+  const hasTimeline = (run?.timeline?.length ?? 0) > 0;
+  const hasBattles = (run?.battles?.length ?? 0) > 0;
+  const activeTab: DetailTab =
+    tab === 'path' && !hasTimeline ? (hasBattles ? 'combat' : 'loadout') : tab;
 
   return (
     <div className="h-full overflow-y-auto p-4 space-y-4 pb-safe-bottom">
-      <Button variant="ghost" size="sm" onClick={() => navigate('/runs')}>
-        ← Runs
-      </Button>
+      <div className="flex items-center justify-between">
+        <Button variant="ghost" size="sm" onClick={() => navigate('/runs')}>
+          ← Runs
+        </Button>
+        {run?.user_id_hash ? (
+          <button
+            type="button"
+            onClick={() => navigate(`/players/${encodeURIComponent(String(run.user_id_hash))}`)}
+            className="rounded-lg bg-gray-100 dark:bg-gray-800 px-2.5 py-1 font-mono text-xs text-gray-700 dark:text-gray-300 hover:bg-primary-500/15 hover:text-primary-600 dark:hover:text-primary-400"
+            title={`Open player profile for ${run.user_id_hash}`}
+          >
+            👤 Player {shortUserId(run.user_id_hash)} →
+          </button>
+        ) : null}
+      </div>
 
       {isLoading ? (
         <div className="flex justify-center py-12">
@@ -148,19 +170,19 @@ export function RunDetailScreen() {
               </h1>
               <OutcomeBadge run={run} />
             </div>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
               <Field label="Floor" value={run.final_floor ?? run.floors_climbed} />
               <Field label="Play time" value={formatDuration(run.play_time_seconds)} />
+              <Field label="Battles" value={run.battles?.length ?? null} />
               <Field label="Version" value={run.game_version} />
               <Field label="Seed" value={run.seed} />
-              <Field label="Ended" value={new Date(run.created_at).toLocaleString()} />
-              <Field label="Battles" value={run.battles?.length ?? null} />
+              <Field label="Ended" value={new Date(run.created_at).toLocaleDateString()} />
             </div>
             {run.outcome === 'died' ? (
-              <p className="text-sm text-red-500">
+              <div className="rounded-xl bg-red-500/10 px-3 py-2 text-xs sm:text-sm text-red-600 dark:text-red-400 font-medium">
                 Died on floor {run.death_floor ?? '?'} to{' '}
                 {(run.death_enemies ?? '').split(',').filter(Boolean).map(prettyKey).join(', ') || 'unknown'}
-              </p>
+              </div>
             ) : null}
             {run.run_uuid ? null : (
               <p className="text-xs text-amber-600">
@@ -169,12 +191,30 @@ export function RunDetailScreen() {
             )}
           </Card>
 
-          <LegacyCounters run={run} />
-          {run.loadout ? <RunLoadoutCard loadout={run.loadout} /> : null}
-          {run.item_stats ? <UsageCard stats={run.item_stats} /> : null}
-          {run.battles && run.battles.length > 0 ? <RunBattlesSection battles={run.battles} /> : null}
-          {run.timeline && run.timeline.length > 0 ? (
+          <SegmentedControl
+            value={activeTab}
+            onChange={setTab}
+            options={[
+              ...(hasTimeline ? [{ value: 'path' as DetailTab, label: 'Path Timeline', count: run.timeline?.length }] : []),
+              ...(hasBattles ? [{ value: 'combat' as DetailTab, label: 'Combat & HP', count: run.battles?.length }] : []),
+              { value: 'loadout', label: 'Loadout & Stats' },
+            ]}
+          />
+
+          {activeTab === 'path' && run.timeline && run.timeline.length > 0 ? (
             <RunTimeline events={run.timeline} dropped={run.item_stats?.dropped_events ?? 0} />
+          ) : null}
+
+          {activeTab === 'combat' && run.battles && run.battles.length > 0 ? (
+            <RunBattlesSection battles={run.battles} />
+          ) : null}
+
+          {activeTab === 'loadout' ? (
+            <div className="space-y-4">
+              {run.loadout ? <RunLoadoutCard loadout={run.loadout} /> : null}
+              {run.item_stats ? <UsageCard stats={run.item_stats} /> : null}
+              <LegacyCounters run={run} />
+            </div>
           ) : null}
         </>
       )}

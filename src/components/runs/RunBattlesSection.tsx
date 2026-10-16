@@ -33,10 +33,10 @@ export function RunBattlesSection({ battles }: { battles: RunBattle[] }) {
   }));
 
   return (
-    <>
+    <div className="space-y-4">
       <Card className="space-y-2">
         <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">HP Over Run</h2>
-        <div className="h-56">
+        <div className="h-52">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={hpData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -59,6 +59,7 @@ export function RunBattlesSection({ battles }: { battles: RunBattle[] }) {
           rows={battles}
           rowKey={b => `${b.index}`}
           initialSort="index"
+          defaultRowLimit={15}
           onRowClick={b => setSelected(prev => (prev?.index === b.index ? null : b))}
           columns={[
             { key: 'index', label: '#' },
@@ -66,16 +67,16 @@ export function RunBattlesSection({ battles }: { battles: RunBattle[] }) {
             { key: 'enemies', label: 'Enemies', render: b => (b.enemies ?? []).map(prettyKey).join(', ') },
             { key: 'result', label: 'Result' },
             { key: 'hp_start', label: 'HP', render: b => `${b.hp_start} → ${b.hp_end ?? '?'}` },
-            { key: 'turns', label: 'Turns' },
-            { key: 'damage_dealt', label: 'Dealt' },
-            { key: 'damage_taken', label: 'Taken' },
-            { key: 'max_hit', label: 'Max hit' },
-            { key: 'max_combo', label: 'Max combo' },
-            { key: 'swaps', label: 'Swaps' },
-            { key: 'queue_placements', label: 'Queued' },
-            { key: 'rerolls', label: 'Rerolls' },
-            { key: 'death_prevented', label: 'Saved' },
-            { key: 'duration', label: 'Time', render: b => formatDuration(b.duration) },
+            { key: 'damage_taken', label: 'Dmg taken' },
+            { key: 'turns', label: 'Turns', secondary: true },
+            { key: 'damage_dealt', label: 'Dmg dealt', secondary: true },
+            { key: 'max_hit', label: 'Max hit', secondary: true },
+            { key: 'max_combo', label: 'Max combo', secondary: true },
+            { key: 'swaps', label: 'Swaps', secondary: true },
+            { key: 'queue_placements', label: 'Queued', secondary: true },
+            { key: 'rerolls', label: 'Rerolls', secondary: true },
+            { key: 'death_prevented', label: 'Saved', secondary: true },
+            { key: 'duration', label: 'Time', render: b => formatDuration(b.duration), secondary: true },
           ]}
         />
         {selected ? (
@@ -94,6 +95,6 @@ export function RunBattlesSection({ battles }: { battles: RunBattle[] }) {
           </div>
         ) : null}
       </Card>
-    </>
+    </div>
   );
 }

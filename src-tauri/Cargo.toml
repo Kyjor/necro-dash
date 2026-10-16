@@ -1,6 +1,6 @@
 [package]
 name = "necro-dash"
-version = "0.4.2"
+version = "0.5.0"
 description = "Necro Dash - Training Plan & Run Tracker"
 authors = ["you"]
 edition = "2021"

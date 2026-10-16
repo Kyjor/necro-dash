@@ -19,13 +19,12 @@ export function EconomySection({ range, version }: StatsScope) {
 
   return (
     <section className="space-y-3">
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Economy</h2>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {TOTAL_KPIS.map(([key, label]) => (
           <KpiCard key={key} label={label} value={isLoading ? '--' : num(totals.get(key)?.avg_value, 1)} />
         ))}
       </div>
-      <ChartWidget title="Shops & rewards" isLoading={isLoading} error={error ?? null} isEmpty={shopRows.length === 0}>
+      <ChartWidget title="Shops & Rewards" isLoading={isLoading} error={error ?? null} isEmpty={shopRows.length === 0}>
         <StatsTable
           rows={shopRows}
           rowKey={r => `${r.category}-${r.item_kind}`}
@@ -34,9 +33,9 @@ export function EconomySection({ range, version }: StatsScope) {
             { key: 'category', label: 'Action', render: r => r.category.replace(/_/g, ' ') },
             { key: 'item_kind', label: 'Kind', render: r => r.item_kind || '—' },
             { key: 'events', label: 'Count' },
-            { key: 'runs', label: 'Runs' },
-            { key: 'total_value', label: 'Total gold' },
             { key: 'avg_value', label: 'Avg gold', render: r => num(r.avg_value, 1) },
+            { key: 'runs', label: 'Runs', secondary: true },
+            { key: 'total_value', label: 'Total gold', secondary: true },
           ]}
         />
       </ChartWidget>

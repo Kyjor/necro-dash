@@ -40,10 +40,10 @@ const BalanceIcon = ({ filled }: { filled: boolean }) => (
 );
 
 const TABS: Tab[] = [
-  { path: '/home', label: 'Home', icon: <HomeIcon filled={false} />, activeIcon: <HomeIcon filled={true} /> },
-  { path: '/stats', label: 'Stats', icon: <StatsIcon filled={false} />, activeIcon: <StatsIcon filled={true} /> },
-  { path: '/runs', label: 'Runs', icon: <RunsIcon filled={false} />, activeIcon: <RunsIcon filled={true} /> },
+  { path: '/home', label: 'Overview', icon: <HomeIcon filled={false} />, activeIcon: <HomeIcon filled={true} /> },
   { path: '/balance', label: 'Balance', icon: <BalanceIcon filled={false} />, activeIcon: <BalanceIcon filled={true} /> },
+  { path: '/runs', label: 'Runs', icon: <RunsIcon filled={false} />, activeIcon: <RunsIcon filled={true} /> },
+  { path: '/stats', label: 'Health', icon: <StatsIcon filled={false} />, activeIcon: <StatsIcon filled={true} /> },
   { path: '/query-builder', label: 'Query', icon: <QueryIcon filled={false} />, activeIcon: <QueryIcon filled={true} /> },
 ];
 
@@ -54,8 +54,10 @@ export function TabBar() {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-t border-gray-200 dark:border-gray-700 pb-safe-bottom">
       <div className="flex items-end justify-around px-2 pt-2 pb-1">
-        {TABS.map(tab => {
-          const isActive = location.pathname.startsWith(tab.path);
+        { TABS.map(tab => {
+          const isActive =
+            location.pathname.startsWith(tab.path) ||
+            (tab.path === '/runs' && location.pathname.startsWith('/players'));
 
           return (
             <button

@@ -161,6 +161,7 @@ export interface RunFilters {
   outcome?: RunOutcome;
   character?: string;
   version?: string;
+  userId?: string;
 }
 
 /** Scalar columns of a Runs row. `run_uuid` is null for rows recorded before the run recorder existed. */
@@ -168,6 +169,7 @@ export interface RunListRow {
   id: number;
   uuid: string;
   created_at: string;
+  user_id_hash: string | number | null;
   run_uuid: string | null;
   outcome: RunOutcome | null;
   character_key: string | null;
@@ -286,6 +288,85 @@ export interface RunListPage {
 export interface RunFilterOptions {
   characters: string[];
   versions: string[];
+  users: Array<{ userId: string; runs: number }>;
+}
+
+export interface UserRunSummary {
+  user_id: string;
+  runs: number;
+  wins: number;
+  deaths: number;
+  abandoned: number;
+  win_rate: number | null;
+  best_floor: number | null;
+  avg_floor: number | null;
+  total_play_time_seconds: number;
+  avg_play_time_seconds: number | null;
+  favorite_character: string | null;
+  first_seen: string;
+  last_seen: string;
+  active_days: number;
+}
+
+export interface UserCharacterBreakdown {
+  character_key: string;
+  runs: number;
+  wins: number;
+  deaths: number;
+  abandoned: number;
+  win_rate: number | null;
+  best_floor: number | null;
+  avg_floor: number | null;
+  total_play_time_seconds: number;
+}
+
+export interface UserItemPreference {
+  key: string;
+  runs: number;
+  wins: number;
+  win_rate: number | null;
+  total_uses: number;
+}
+
+export interface UserNemesisStat {
+  enemies: string;
+  deaths: number;
+  avg_floor: number | null;
+}
+
+export interface UserPlaystyleMetrics {
+  avg_turns_per_run: number | null;
+  avg_kills_per_run: number | null;
+  avg_damage_dealt: number | null;
+  avg_hp_lost: number | null;
+  avg_hp_gained: number | null;
+  avg_gold_spent: number | null;
+  avg_rerolls: number | null;
+  avg_swaps: number | null;
+  avg_drags: number | null;
+  avg_potions_used: number | null;
+  max_combo_ever: number | null;
+  max_single_hit_ever: number | null;
+  total_battles: number;
+  avg_turns_per_battle: number | null;
+}
+
+export interface UserProfileData {
+  summary: UserRunSummary;
+  startup_count: number;
+  crash_count: number;
+  os_name: string | null;
+  cpu_name: string | null;
+  gpu_name: string | null;
+  playstyle: UserPlaystyleMetrics;
+  characters: UserCharacterBreakdown[];
+  top_treasures: UserItemPreference[];
+  top_pieces: UserItemPreference[];
+  top_potions: UserItemPreference[];
+  top_abilities: UserItemPreference[];
+  nemeses: UserNemesisStat[];
+  floor_progression: Array<{ date: string; floor: number; outcome: RunOutcome | null; playTimeSeconds: number }>;
+  runs: RunListRow[];
 }
 
 /** Filters shared by the stats RPCs. */
